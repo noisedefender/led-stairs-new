@@ -467,8 +467,7 @@ light:
               }
             }
             
-            if(progress >= 0){
-              delay(300);
+            if(millis() - last_time >= 300)
             } 
             progress++;
 
@@ -500,8 +499,7 @@ light:
               }
             }
             
-            if(progress >= 0){
-              delay(300);
+            if(millis() - last_time >= 300)
             }
             
             if(progress > anzahl){
@@ -543,8 +541,7 @@ light:
               }
             }
             
-            if(progress >= 0){
-              delay(200);
+            if(millis() - last_time >= 200)
             } 
             progress++;
 
@@ -575,8 +572,7 @@ light:
               }
             }
             
-            if(progress >= 0){
-              delay(500);
+            if(millis() - last_time >= 500)
             }
             
             progress++;
@@ -609,8 +605,7 @@ light:
               }
             }
             
-            if(progress < anzahl){
-              delay(300);
+            if(millis() - last_time >= 300)
             }
             progress--;
 
@@ -642,8 +637,7 @@ light:
               }
             }
             
-            if(progress < anzahl){
-              delay(300);
+            if(millis() - last_time >= 300)
             }
 
             if(progress <= 0){
@@ -685,9 +679,7 @@ light:
               }
             }
             
-            if(progress < anzahl){
-              delay(200);
-            }
+            if(millis() - last_time >= 200)
             progress--;
 
 
@@ -716,8 +708,7 @@ light:
                 von += ledStufe[stufe];
               }
             }
-            if(progress < anzahl){
-              delay(500);
+            if(millis() - last_time >= 500)
             } 
 
             progress--;
