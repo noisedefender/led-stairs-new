@@ -318,30 +318,10 @@ binary_sensor:
         - script.execute: treppe_runter_aktivieren
 
 switch:
-  - platform: gpio
-    pin: ${statusled_pir_up_pin}
-    name: "RGB-Treppe PIR oben Status LED"
-    id: rgbtreppe_pir_status_o
-    internal: true
-    
-  - platform: gpio
-    pin: ${statusled_pir_down_pin}
-    name: "RGB-Treppe PIR unten Status LED"
-    id: rgbtreppe_pir_status_u
-    internal: true
-
-  - platform: gpio
-    pin: ${statusled_light_pin}
-    name: "RGB-Treppe Helligkeit Status LED"
-    id: rgbtreppe_hell_status
-    internal: true
-
   - platform: template
     name: "Treppe Aktiviert"
     id: treppe_aktiv
     optimistic: true
-    
-
 
 light:
   - platform: neopixelbus
@@ -503,7 +483,7 @@ light:
           name: "Stufenlicht rauf colorized"
           update_interval: 16ms
           lambda: |-
-            static const int16_t anzahl = ${stufen_anzahl};
+            static uint32_t last_time = 0;
             int ledStufe[anzahl] = ${leds_pro_stufe};
 
             int von = 0;
