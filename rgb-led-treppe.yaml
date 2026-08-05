@@ -1,16 +1,11 @@
 substitutions:
   # ------------------
-  #   Pin-Belegung
+  # Pin-Belegung (ESP32-S3)
   # ------------------
-  lightlevel_pin:            A0
-  pir_down_pin:              D5
-  pir_up_pin:                D7
-  led_pin:                   D6
-  
-  statusled_pir_up_pin:      D1
-  statusled_pir_down_pin:    D2
-  statusled_light_pin:       D8
-
+  lightlevel_pin: GPIO1 # Пример для S3, адаптируйте под вашу схему
+  pir_down_pin: GPIO2   # Пример для S3
+  pir_up_pin: GPIO3     # Пример для S3
+  led_pin: GPIO4        # Пример для S3
 
   # ------------------
   #    LED Timings
@@ -113,23 +108,6 @@ wifi:
   ssid: ${wifi_ssid}
   password: ${wifi_password}
 
-  ap:
-    ssid: "RGB-Treppe"
-    password: "fnlIp2hjHmrL"
-    ap_timeout: 30s
-
-web_server:
-captive_portal:
-
-api:
-  encryption:
-    key: !secret ESPHOME_ENCRYPTION_KEY
-
-ota:
-  platform: esphome
-  password: !secret ota_password
-
-
 esphome:
   name: shys-rgb-treppe
   friendly_name: SHYS RGB Treppe
@@ -138,8 +116,10 @@ esphome:
     then:
       - switch.turn_on: treppe_aktiv
 
-esp8266:
-  board: nodemcuv2
+esp32:
+  board: esp32-s3-devkitc-1
+  framework:
+    type: arduino
 
 logger:
 
@@ -373,11 +353,10 @@ light:
     name: "Treppe Oben LED"
     id: rgbtreppe_led
     restore_mode: ALWAYS_OFF
-    
     on_turn_off:
       - text_sensor.template.publish:
           id: treppen_status
-          state: "idle"    
+          state: "idle"
     
     effects:
       - addressable_rainbow:
@@ -521,7 +500,7 @@ light:
       # - ledStufe[anzahl]   -  ist ein Array, welches für jede Stufe die jeweilige Anzahl der LEDs beinhaltet.
       #                         Die Anzahl der in ledStufe enthaltenen Einträge muss der Anzahl der Stufen entsprechen!
       - addressable_lambda:
-          name: "Stufenlicht rauf animiert"
+          name: "Stufenlicht rauf colorized"
           update_interval: 16ms
           lambda: |-
             static const int16_t anzahl = ${stufen_anzahl};
