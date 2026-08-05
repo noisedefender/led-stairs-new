@@ -480,7 +480,7 @@ light:
       # - ledStufe[anzahl]   -  ist ein Array, welches für jede Stufe die jeweilige Anzahl der LEDs beinhaltet.
       #                         Die Anzahl der in ledStufe enthaltenen Einträge muss der Anzahl der Stufen entsprechen!
       - addressable_lambda:
-          name: "Stufenlicht rauf colorized"
+          name: "Stufenlicht rauf animarten"
           update_interval: 16ms
           lambda: |-
             static uint32_t last_time = 0;
