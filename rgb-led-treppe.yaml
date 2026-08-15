@@ -1,392 +1,636 @@
 substitutions:
-  # ------------------
-  # Pin-Belegung (ESP32-S3)
-  # ------------------
-  lightlevel_pin: GPIO1 # Пример для S3, адаптируйте под вашу схему
-  pir_down_pin: GPIO2   # Пример для S3
-  pir_up_pin: GPIO3     # Пример для S3
-  led_pin: GPIO4        # Пример для S3
 
-  # ------------------
-  #    LED Timings
-  # ------------------
-  # Gibt die Zeit an, nach der die Treppe sich automatisch wieder ausschaltet, 
-  # wenn bis dahin keine Bewegung am anderen Ende erkannt wurde.
-  timeout_seconds:          60s
-  
-  # Gibt an, wie lange die Abschaltung verzögert werden soll, 
-  # nach dem eine Bewegung am Ziel der Treppe erkannt wurde.
-  switchoff_delay_seconds:   10s
-  
-  # Gibt an, wie lange die Treppe nach abschalten der LEDs deaktiviert sein soll,
-  # Bevor sie durch Bewegung wieder ausgelöst werden kann.
-  cooldown_seconds:          5s
-  
-  
+  # ============================================================
+  # HARDWARE
+  # ============================================================
 
-  # ------------------------
-  #   Effekt-Einstellungen
-  # ------------------------
-  
-  # Folgende Effekte stehen zur Verfügung:
-  #
-  # Rainbow
-  # Color Wipe Up
-  # Color Wipe Down
-  # Rocket
-  # Firework
-  # Stufenlicht rauf
-  # Stufenlicht rauf animiert
-  # Stufenlicht rauf colorized
-  # Stufenlicht rauf aus
-  # Stufenlicht runter
-  # Stufenlicht runter animiert
-  # Stufenlicht runter colorized
-  # Stufenlicht runter aus
-  
-  # Effekt-Name für das einschalten der Treppe von unten nach oben.
-  led_effect_up:             "Stufenlicht rauf colorized"
+  lightlevel_pin: GPIO1
+  pir_down_pin: GPIO2
+  pir_up_pin: GPIO3
+  led_pin: GPIO4
 
-  # Effekt-Name für das einschalten der Treppe von oben nach unten.
-  led_effect_down:           "Stufenlicht runter colorized"
-  
-  # Effekt-Name für das abschalten der Treppe von unten nach oben.
-  # Wird kein Effektname angegeben, werden die LEDs nur ausgeschaltet.
-  led_effect_up_off:         "Stufenlicht rauf aus"
+  # ============================================================
+  # STAIR TIMING
+  # ============================================================
 
-  # Effekt-Name für das abschalten der Treppe von oben nach unten.
-  # Wird kein Effektname angegeben, werden die LEDs nur ausgeschaltet.
-  led_effect_down_off:       "Stufenlicht runter aus"
-  led_effect_off_timeout:    10s
-  
-  # Gibt an, wie viele beleuchtete Stufen die Treppe besitzt 
-  stufen_anzahl:             "16"
-  
-  # Gibt an, wie viele LEDs je Stufe existieren 
-  # (Anzahl der Zahlenwerte muss mit "stufen_anzahl" übereinstimmen)
-  leds_pro_stufe:            "{36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36}" #, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10}"
+  # Максимальное время работы после срабатывания PIR,
+  # если движение на противоположном конце не обнаружено.
+  timeout_seconds: 60s
 
-  # Gibt die Farbe je Stufe an (für "Colorized" Animation) 
-  # (Anzahl der Zahlenwerte muss mit "stufen_anzahl" übereinstimmen)
-  farbe_je_stufe:            "{Color(39,111,181), Color(39,111,181), Color(39,111,181), Color(39,111,181), Color(39,111,181), Color(39,111,181), Color(39,111,181), Color(39,111,181), Color(39,111,181), Color(39,111,181), Color(39,111,181), Color(39,111,181), Color(39,111,181), Color(39,111,181), Color(39,111,181), Color(39,111,181) }" 
+  # Задержка перед началом выключения после PIR
+  # на противоположном конце.
+  switchoff_delay_seconds: 10s
 
+  # После полного выключения лестница некоторое время
+  # игнорирует PIR.
+  cooldown_seconds: 5s
 
-  # ------------------
-  #    System
-  # ------------------
-  # Anzahl der LEDs
+  # ============================================================
+  # EFFECTS USED BY PIR
+  # ============================================================
+
+  led_effect_up: "Stufenlicht rauf colorized"
+  led_effect_down: "Stufenlicht runter colorized"
+
+  led_effect_up_off: "Stufenlicht rauf aus"
+  led_effect_down_off: "Stufenlicht runter aus"
+
+  led_effect_off_timeout: 10s
+
+  # ============================================================
+  # STAIR CONFIGURATION
+  # ============================================================
+
+  stufen_anzahl: "16"
+
+  # Количество LED на каждой ступени.
+  # Сумма должна совпадать с led_anzahl.
+  leds_pro_stufe: "{36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36}"
+
+  # Цвет каждой ступени.
+  # RGB 0..255.
+  farbe_je_stufe: "{Color(39,111,181), Color(39,111,181), Color(39,111,181), Color(39,111,181), Color(39,111,181), Color(39,111,181), Color(39,111,181), Color(39,111,181), Color(39,111,181), Color(39,111,181), Color(39,111,181), Color(39,111,181), Color(39,111,181), Color(39,111,181), Color(39,111,181), Color(39,111,181)}"
+
+  # Общее количество LED.
   led_anzahl: "576"
 
-  # Gibt an, ob die Treppe anhand des Lichtsensors ein/ausgeschaltet werden soll
-  # Da der Fotowiderstand bei Dunkelheit weniger Strom durchlässt, 
-  # ist die Treppe bei aktiviertem Lichtsensor nur aktiv, 
-  # Wenn der Sensorwert unter dem "lightlevel_maxvalue" Wert liegt.
-  light_sensor_active:       "false"
-  lightlevel_maxvalue:       "0.7"
+  # ============================================================
+  # LIGHT SENSOR
+  # ============================================================
 
-  # Gibt an, ob die Treppe anhand des Sonnenstandes automatisch ein/ausgeschaltet werden soll.
-  # Wenn aktiv (true) ist schaltet sich die Treppe nur nach Sonnenuntergang ein.
-  sun_active:       "false"
-  
-  # Höhen/Breitengrad für Sonnenstandsermittlung
+  light_sensor_active: "false"
+
+  # При значении ниже этого уровня лестница разрешена.
+  lightlevel_maxvalue: "0.7"
+
+  # ============================================================
+  # SUN
+  # ============================================================
+
+  sun_active: "false"
+
   latitude: "51.138374°"
   longitude: "7.185790°"
 
+  # ============================================================
+  # WIFI
+  # ============================================================
 
-  # WLAN Zugangsdaten
-  wifi_ssid:                 !secret wifi_ssid 
-  wifi_password:             !secret wifi_password
-
-# -------------------------------------------------------------
-# -------------------------------------------------------------
-#  AB HIER MUSS NICHTS MEHR GEÄNDERT WERDEN
-# -------------------------------------------------------------
-# -------------------------------------------------------------
+  wifi_ssid: !secret wifi_ssid
+  wifi_password: !secret wifi_password
 
 
-wifi:
-  ssid: ${wifi_ssid}
-  password: ${wifi_password}
+# ==============================================================
+# ESPHOME
+# ==============================================================
 
 esphome:
   name: shys-rgb-treppe
   friendly_name: SHYS RGB Treppe
+
   on_boot:
     priority: 500
     then:
       - switch.turn_on: treppe_aktiv
+
+
+# ==============================================================
+# ESP32-S3
+# ==============================================================
 
 esp32:
   board: esp32-s3-devkitc-1
   framework:
     type: arduino
 
+
+# ==============================================================
+# WIFI
+# ==============================================================
+
+wifi:
+  ssid: ${wifi_ssid}
+  password: ${wifi_password}
+
+  ap:
+    ssid: "SHYS RGB Treppe Fallback"
+    password: !secret fallback_password
+
+
+# ==============================================================
+# LOGGER
+# ==============================================================
+
 logger:
 
 
+# ==============================================================
+# API
+# ==============================================================
+
+api:
+
+
+# ==============================================================
+# OTA
+# ==============================================================
+
+ota:
+  - platform: esphome
+
+
+# ==============================================================
+# CAPTIVE PORTAL
+# ==============================================================
+
+captive_portal:
+
+
+# ==============================================================
+# GLOBALS
+# ==============================================================
+
 globals:
+
+  # true во время движения снизу вверх
   - id: treppe_rauf_laeuft
     type: bool
     restore_value: no
-    initial_value: 'false'
-    
+    initial_value: "false"
+
+  # true во время движения сверху вниз
   - id: treppe_runter_laeuft
     type: bool
     restore_value: no
-    initial_value: 'false'
-    
-  - id: led_anzahl
-    type: int
-    restore_value: yes
-    initial_value: '120'
-    
-  - id: stufen_anzahl
-    type: int
-    restore_value: yes
-    initial_value: '12'
+    initial_value: "false"
 
 
-number:
-  - platform: template
-    id: led_count_test
-    name: "led_count_test"
-    optimistic: true
-    min_value: 0
-    max_value: 1000
-    step: 1
-    initial_value: 120
-    restore_value: true
-
+# ==============================================================
+# SUN
+# ==============================================================
 
 sun:
   latitude: ${latitude}
   longitude: ${longitude}
 
+
+# ==============================================================
+# TIME
+# ==============================================================
+
 time:
+
   - platform: homeassistant
     id: local_time
+
   - platform: sntp
     id: sntp_time
 
 
-script:
-  - id: treppe_rauf_aktivieren
-    mode: restart
-    then:
-      - if:
-          condition:
-            - switch.is_on: treppe_aktiv
-            - or:
-                - lambda: return id(rgbtreppe_helligkeitssensor).state < ${lightlevel_maxvalue};
-                - lambda: return ${light_sensor_active} == false;
-            - or:
-                - not: 
-                    - wifi.connected:
-                - sun.is_below_horizon:
-                - lambda: return ${sun_active} == false;
-            - lambda: return id(treppe_rauf_laeuft) == false && id(treppe_runter_laeuft) == false;
-
-          then:
-            - text_sensor.template.publish:
-                id: treppen_status
-                state: "Treppe rauf"
-            - lambda: id(treppe_rauf_laeuft) = true;
-            - light.turn_on:
-                id: rgbtreppe_led
-                effect: ${led_effect_up}
-                
-      # Trennung + zusätzliches if für "restart"-Mode
-      - if:
-          condition:
-            - lambda: return id(treppe_rauf_laeuft) == true;
-          then:
-            - wait_until:
-                timeout: ${timeout_seconds}
-                condition: 
-                  binary_sensor.is_on: rgbtreppe_pir_o
-            - script.execute: treppe_rauf_deaktivieren
-
-  - id: treppe_runter_aktivieren
-    mode: restart
-    then:
-      - if:
-          condition:
-            - switch.is_on: treppe_aktiv
-            - or:
-                - lambda: return id(rgbtreppe_helligkeitssensor).state < ${lightlevel_maxvalue};
-                - lambda: return ${light_sensor_active} == false;
-            - or:
-                - not: 
-                    - wifi.connected:
-                - sun.is_below_horizon:
-                - lambda: return ${sun_active} == false;
-            - lambda: return id(treppe_rauf_laeuft) == false && id(treppe_runter_laeuft) == false;
-
-          then:
-            - text_sensor.template.publish:
-                id: treppen_status
-                state: "Treppe runter"
-            - lambda: id(treppe_runter_laeuft) = true;
-            - light.turn_on:
-                id: rgbtreppe_led
-                effect: ${led_effect_down}
-      # Trennung + zusätzliches if für "restart"-Mode
-      - if:
-          condition:
-            - lambda: return id(treppe_runter_laeuft) == true;
-          then:
-            - wait_until:
-                timeout: ${timeout_seconds}
-                condition: 
-                  binary_sensor.is_on: rgbtreppe_pir_u
-            - script.execute: treppe_runter_deaktivieren
-
-  - id: treppe_rauf_deaktivieren
-    mode: restart
-    then:
-      - delay: ${switchoff_delay_seconds}
-            
-      - if:
-          condition:
-            - not: 
-              - lambda: 'return strcmp("${led_effect_up_off}", "") == 0;'
-          then:
-            - light.turn_on:
-                id: rgbtreppe_led
-                effect: ${led_effect_up_off}
-            - delay: ${led_effect_off_timeout}
-            
-      - light.turn_off:
-          id: rgbtreppe_led
-      - delay: ${cooldown_seconds}
-      - lambda: id(treppe_rauf_laeuft) = false;
-
-    
-  - id: treppe_runter_deaktivieren
-    mode: restart
-    then:
-      - delay: ${switchoff_delay_seconds}
-      
-      - if:
-          condition:
-            - not: 
-              - lambda: 'return strcmp("${led_effect_down_off}", "") == 0;'
-          then:
-            - light.turn_on:
-                id: rgbtreppe_led
-                effect: ${led_effect_down_off}
-            - delay: ${led_effect_off_timeout}
-            
-      - light.turn_off:
-          id: rgbtreppe_led
-      - delay: ${cooldown_seconds}
-      - lambda: id(treppe_runter_laeuft) = false;
-
+# ==============================================================
+# TEXT SENSOR
+# ==============================================================
 
 text_sensor:
+
   - platform: template
     name: "Treppen-Status"
     id: treppen_status
-    lambda: return {"idle"};
+    lambda: |-
+      return {"idle"};
 
+
+# ==============================================================
+# LIGHT SENSOR
+# ==============================================================
 
 sensor:
+
   - platform: adc
     pin: ${lightlevel_pin}
     name: "RGB-Treppe Helligkeitssensor"
-    update_interval: 30s
     id: rgbtreppe_helligkeitssensor
+    update_interval: 30s
 
+
+# ==============================================================
+# PIR SENSORS
+# ==============================================================
 
 binary_sensor:
+
+  # ------------------------------------------------------------
+  # PIR BOTTOM
+  # ------------------------------------------------------------
+
   - platform: gpio
-    pin: ${pir_down_pin}
+    pin:
+      number: ${pir_down_pin}
+      mode:
+        input: true
+
     name: "Treppe Bewegungsmelder unten"
     device_class: motion
     id: rgbtreppe_pir_u
+
     on_press:
       then:
         - script.execute: treppe_rauf_aktivieren
 
+
+  # ------------------------------------------------------------
+  # PIR TOP
+  # ------------------------------------------------------------
+
   - platform: gpio
-    pin: ${pir_up_pin}
+    pin:
+      number: ${pir_up_pin}
+      mode:
+        input: true
+
     name: "Treppe Bewegungsmelder oben"
     device_class: motion
     id: rgbtreppe_pir_o
+
     on_press:
       then:
         - script.execute: treppe_runter_aktivieren
 
+
+# ==============================================================
+# MAIN ENABLE SWITCH
+# ==============================================================
+
 switch:
+
   - platform: template
     name: "Treppe Aktiviert"
     id: treppe_aktiv
     optimistic: true
+    restore_mode: RESTORE_DEFAULT_ON
+
+
+# ==============================================================
+# SCRIPTS
+# ==============================================================
+
+script:
+
+  # ============================================================
+  # BOTTOM PIR -> LIGHT UP
+  # ============================================================
+
+  - id: treppe_rauf_aktivieren
+    mode: restart
+
+    then:
+
+      - if:
+          condition:
+            - switch.is_on: treppe_aktiv
+
+            # Light sensor:
+            # active only if sensor is below threshold
+            # OR light sensor is disabled.
+            - or:
+                - lambda: |-
+                    return id(rgbtreppe_helligkeitssensor).state <
+                           ${lightlevel_maxvalue};
+                - lambda: |-
+                    return ${light_sensor_active} == false;
+
+            # Sun:
+            # active after sunset
+            # OR sun control is disabled.
+            - or:
+                - not:
+                    - wifi.connected
+                - sun.is_below_horizon
+                - lambda: |-
+                    return ${sun_active} == false;
+
+            # Do not start if another direction is running.
+            - lambda: |-
+                return !id(treppe_rauf_laeuft) &&
+                       !id(treppe_runter_laeuft);
+
+          then:
+
+            - text_sensor.template.publish:
+                id: treppen_status
+                state: "Treppe rauf"
+
+            - lambda: |-
+                id(treppe_rauf_laeuft) = true;
+
+            - light.turn_on:
+                id: rgbtreppe_led
+                effect: ${led_effect_up}
+
+      # --------------------------------------------------------
+      # Wait for PIR at TOP or timeout.
+      # --------------------------------------------------------
+
+      - if:
+          condition:
+            - lambda: |-
+                return id(treppe_rauf_laeuft);
+
+          then:
+
+            - wait_until:
+                timeout: ${timeout_seconds}
+                condition:
+                  binary_sensor.is_on: rgbtreppe_pir_o
+
+            - script.execute: treppe_rauf_deaktivieren
+
+
+  # ============================================================
+  # TOP PIR -> LIGHT DOWN
+  # ============================================================
+
+  - id: treppe_runter_aktivieren
+    mode: restart
+
+    then:
+
+      - if:
+          condition:
+            - switch.is_on: treppe_aktiv
+
+            - or:
+                - lambda: |-
+                    return id(rgbtreppe_helligkeitssensor).state <
+                           ${lightlevel_maxvalue};
+                - lambda: |-
+                    return ${light_sensor_active} == false;
+
+            - or:
+                - not:
+                    - wifi.connected
+                - sun.is_below_horizon
+                - lambda: |-
+                    return ${sun_active} == false;
+
+            - lambda: |-
+                return !id(treppe_rauf_laeuft) &&
+                       !id(treppe_runter_laeuft);
+
+          then:
+
+            - text_sensor.template.publish:
+                id: treppen_status
+                state: "Treppe runter"
+
+            - lambda: |-
+                id(treppe_runter_laeuft) = true;
+
+            - light.turn_on:
+                id: rgbtreppe_led
+                effect: ${led_effect_down}
+
+      # --------------------------------------------------------
+      # Wait for PIR at BOTTOM or timeout.
+      # --------------------------------------------------------
+
+      - if:
+          condition:
+            - lambda: |-
+                return id(treppe_runter_laeuft);
+
+          then:
+
+            - wait_until:
+                timeout: ${timeout_seconds}
+                condition:
+                  binary_sensor.is_on: rgbtreppe_pir_u
+
+            - script.execute: treppe_runter_deaktivieren
+
+
+  # ============================================================
+  # SWITCH OFF AFTER MOVEMENT FROM BOTTOM
+  # ============================================================
+
+  - id: treppe_rauf_deaktivieren
+    mode: restart
+
+    then:
+
+      - delay: ${switchoff_delay_seconds}
+
+      # --------------------------------------------------------
+      # Optional animated switch-off
+      # --------------------------------------------------------
+
+      - if:
+          condition:
+            - lambda: |-
+                return "${led_effect_up_off}"[0] != '\0';
+
+          then:
+
+            - light.turn_on:
+                id: rgbtreppe_led
+                effect: ${led_effect_up_off}
+
+            - delay: ${led_effect_off_timeout}
+
+      # --------------------------------------------------------
+      # Complete OFF
+      # --------------------------------------------------------
+
+      - light.turn_off:
+          id: rgbtreppe_led
+
+      # --------------------------------------------------------
+      # Cooldown
+      # --------------------------------------------------------
+
+      - delay: ${cooldown_seconds}
+
+      - lambda: |-
+          id(treppe_rauf_laeuft) = false;
+
+      - text_sensor.template.publish:
+          id: treppen_status
+          state: "idle"
+
+
+  # ============================================================
+  # SWITCH OFF AFTER MOVEMENT FROM TOP
+  # ============================================================
+
+  - id: treppe_runter_deaktivieren
+    mode: restart
+
+    then:
+
+      - delay: ${switchoff_delay_seconds}
+
+      # --------------------------------------------------------
+      # Optional animated switch-off
+      # --------------------------------------------------------
+
+      - if:
+          condition:
+            - lambda: |-
+                return "${led_effect_down_off}"[0] != '\0';
+
+          then:
+
+            - light.turn_on:
+                id: rgbtreppe_led
+                effect: ${led_effect_down_off}
+
+            - delay: ${led_effect_off_timeout}
+
+      # --------------------------------------------------------
+      # Complete OFF
+      # --------------------------------------------------------
+
+      - light.turn_off:
+          id: rgbtreppe_led
+
+      # --------------------------------------------------------
+      # Cooldown
+      # --------------------------------------------------------
+
+      - delay: ${cooldown_seconds}
+
+      - lambda: |-
+          id(treppe_runter_laeuft) = false;
+
+      - text_sensor.template.publish:
+          id: treppen_status
+          state: "idle"
+
+
+# ==============================================================
+# WS2812 LED STRIP
+# ==============================================================
 
 light:
-  - platform: neopixelbus
-    type: GRB
-    variant: WS2812
-    pin: ${led_pin}
-    num_leds: ${led_anzahl}
-    default_transition_length: 3s
-    name: "Treppe Oben LED"
+
+  - platform: esp32_rmt_led_strip
+
     id: rgbtreppe_led
+    name: "Treppe Oben LED"
+
+    pin: ${led_pin}
+
+    chipset: WS2812
+    rgb_order: GRB
+
+    num_leds: ${led_anzahl}
+
+    # ESP32-S3 RMT.
+    # DMA is useful for a long 576 LED strip.
+    use_dma: true
+
+    # Approximately 60 Hz maximum refresh.
+    max_refresh_rate: 16ms
+
     restore_mode: ALWAYS_OFF
+
+    # IMPORTANT:
+    # Stair effects are controlled directly by the addressable
+    # lambda. No 3-second light transition should interfere
+    # with the stair animation.
+
     on_turn_off:
       - text_sensor.template.publish:
           id: treppen_status
           state: "idle"
-    
+
+
+    # ==========================================================
+    # EFFECTS
+    # ==========================================================
+
     effects:
+
+      # ========================================================
+      # RAINBOW
+      # ========================================================
+
       - addressable_rainbow:
-          name: Rainbow
+          name: "Rainbow"
           speed: 10
           width: 90
 
+
+      # ========================================================
+      # COLOR WIPE DOWN
+      # ========================================================
+
       - addressable_color_wipe:
-          name: Color Wipe Down
+          name: "Color Wipe Down"
+
           colors:
+
             - red: 0%
               green: 0%
               blue: 100%
               num_leds: 30
+
             - red: 30%
               green: 100%
               blue: 60%
               num_leds: 30
+
           add_led_interval: 50ms
           reverse: false
 
+
+      # ========================================================
+      # COLOR WIPE UP
+      # ========================================================
+
       - addressable_color_wipe:
-          name: Color Wipe Up
+          name: "Color Wipe Up"
+
           colors:
+
             - red: 0%
               green: 0%
               blue: 100%
               num_leds: 30
+
             - red: 30%
               green: 100%
               blue: 60%
               num_leds: 30
+
           add_led_interval: 50ms
           reverse: true
 
+
+      # ========================================================
+      # ROCKET
+      # ========================================================
+
       - addressable_color_wipe:
-          name: Rocket
+          name: "Rocket"
+
           colors:
+
             - red: 100%
               green: 0%
               blue: 0%
               num_leds: 3
+
             - red: 100%
               green: 100%
               blue: 100%
               num_leds: 2
+
             - red: 100%
               green: 0%
               blue: 0%
               num_leds: 3
+
             - red: 100%
               green: 100%
               blue: 100%
@@ -396,30 +640,37 @@ light:
               green: 5%
               blue: 2%
               num_leds: 1
+
             - red: 30%
               green: 15%
               blue: 6%
               num_leds: 1
+
             - red: 70%
               green: 30%
               blue: 10%
               num_leds: 1
+
             - red: 100%
               green: 80%
               blue: 20%
               num_leds: 1
+
             - red: 100%
               green: 40%
               blue: 10%
               num_leds: 1
+
             - red: 10%
               green: 5%
               blue: 1%
               num_leds: 1
+
             - red: 0%
               green: 0%
               blue: 0%
               num_leds: 1
+
             - red: 10%
               green: 5%
               blue: 1%
@@ -429,289 +680,481 @@ light:
               green: 0%
               blue: 0%
               num_leds: 155
+
           add_led_interval: 20ms
           reverse: true
 
+
+      # ========================================================
+      # FIREWORK
+      # ========================================================
+
       - addressable_fireworks:
-          name: Firework
+          name: "Firework"
           update_interval: 32ms
           spark_probability: 40%
           use_random_color: true
           fade_out_rate: 120
- 
 
-      # Bei diesem Effekt wird jede Stufe einzeln in einer Zufalls-Farbe eingeschaltet. (Laufrichtung von Stripe-Start nach Stripe-Ende)
-      # In diesem Effekt behalten die Stufen bis zum abschalten ihre Farbe. 
-      # 
-      # - anzahl             -  muss auf die Anzahl der Stufen angepasst werden
-      # - ledStufe[anzahl]   -  ist ein Array, welches für jede Stufe die jeweilige Anzahl der LEDs beinhaltet.
-      #                         Die Anzahl der in ledStufe enthaltenen Einträge muss der Anzahl der Stufen entsprechen!
+
+      # ========================================================
+      # STUFENLICHT RAUF
+      #
+      # One-shot:
+      # 0 -> 1 -> 2 -> ... -> 15
+      #
+      # Each step gets one random color and keeps it.
+      # ========================================================
+
       - addressable_lambda:
           name: "Stufenlicht rauf"
           update_interval: 16ms
+
           lambda: |-
+
             static const int16_t anzahl = ${stufen_anzahl};
-            int ledStufe[anzahl] = ${leds_pro_stufe};
-            int von = 0;
-            
-            static uint16_t progress = 0;
+
+            const int ledStufe[anzahl] = ${leds_pro_stufe};
+
+            static int16_t progress = 0;
+            static uint32_t last_time = 0;
+
+            // New effect.
             if (initial_run) {
-              progress = -1;
+              progress = 0;
+              last_time = millis();
+
+              it.all() = esphome::Color::BLACK;
+              return;
             }
-            
-            for(int stufe=0; stufe < anzahl; stufe++){
-              if(stufe == progress){
-                it.range(von, von + ledStufe[stufe]) = esphome::Color::random_color();
-              } else {
-                von += ledStufe[stufe];
+
+            // Wait 300 ms between steps.
+            if (millis() - last_time < 300) {
+              return;
+            }
+
+            last_time = millis();
+
+            if (progress >= anzahl) {
+              return;
+            }
+
+            int von = 0;
+
+            for (int stufe = 0; stufe < anzahl; stufe++) {
+
+              if (stufe == progress) {
+
+                it.range(
+                  von,
+                  von + ledStufe[stufe]
+                ) = esphome::Color::random_color();
+
+                break;
               }
+
+              von += ledStufe[stufe];
             }
-            {
-            if(millis() - last_time >= 300)
-            } 
+
             progress++;
 
 
-      # Beim animierten Effekt wird jede Stufe einzeln in einer Zufalls-Farbe eingeschaltet.  (Laufrichtung von Stripe-Start nach Stripe-Ende)
-      # Sobald alle Stufen aktiv sind, wird bei der ersten Stufe wieder mit einer neuen Zufalls-Farbe angefangen.
-      # 
-      # - anzahl             -  muss auf die Anzahl der Stufen angepasst werden
-      # - ledStufe[anzahl]   -  ist ein Array, welches für jede Stufe die jeweilige Anzahl der LEDs beinhaltet.
-      #                         Die Anzahl der in ledStufe enthaltenen Einträge muss der Anzahl der Stufen entsprechen!
+      # ========================================================
+      # STUFENLICHT RAUF ANIMIERT
+      #
+      # Repeats continuously.
+      # ========================================================
+
       - addressable_lambda:
-          name: "Stufenlicht rauf animarten"
+          name: "Stufenlicht rauf animiert"
           update_interval: 16ms
+
           lambda: |-
+
+            static const int16_t anzahl = ${stufen_anzahl};
+
+            const int ledStufe[anzahl] = ${leds_pro_stufe};
+
+            static int16_t progress = 0;
             static uint32_t last_time = 0;
-            int ledStufe[anzahl] = ${leds_pro_stufe};
+
+            if (initial_run) {
+              progress = 0;
+              last_time = millis();
+
+              it.all() = esphome::Color::BLACK;
+              return;
+            }
+
+            if (millis() - last_time < 300) {
+              return;
+            }
+
+            last_time = millis();
 
             int von = 0;
-            static uint16_t progress = 0;
-            if (initial_run) {
-              progress = -1;
-            }
-            
-            for(int stufe=0; stufe < anzahl; stufe++){
-              if(stufe == progress){
-                it.range(von, von + ledStufe[stufe]) = esphome::Color::random_color();
-              } else {
-                von += ledStufe[stufe];
+
+            for (int stufe = 0; stufe < anzahl; stufe++) {
+
+              if (stufe == progress) {
+
+                it.range(
+                  von,
+                  von + ledStufe[stufe]
+                ) = esphome::Color::random_color();
+
+                break;
               }
+
+              von += ledStufe[stufe];
             }
-            {
-            if(millis() - last_time >= 300)
-            }
-            
-            if(progress > anzahl){
+
+            progress++;
+
+            if (progress >= anzahl) {
               progress = 0;
-            } else {
-              progress++;
             }
 
 
-      # Beim colorized Effekt wird jede Stufe einzeln in einer Festgelegten-Farbe eingeschaltet.  (Laufrichtung von Stripe-Start nach Stripe-Ende)
-      # Die Farbauswahl kann für jede Stufe individuell erfolgen
-      # 
-      # - anzahl                  -  muss auf die Anzahl der Stufen angepasst werden
-      # - ledStufe[anzahl]        -  ist ein Array, welches für jede Stufe die jeweilige Anzahl der LEDs beinhaltet.
-      #                              Die Anzahl der in ledStufe enthaltenen Einträge muss der Anzahl der Stufen entsprechen!
-      # - ledStufenFarbe[anzahl]  -  ist ein Array, welches für jede Stufe die jeweilige Farbe beinhaltet.
-      #                              Die Anzahl der in ledStufenFarbe enthaltenen Einträge muss der Anzahl der Stufen entsprechen!
-      #                              Die Farben sind in der Form "Color(rot, grün, blau)" anzugeben, 
-      #                              wobei hier für rot, grün und blau jeweils eine Zahl zwischen 0 und 255 angegeben werden muss.
+      # ========================================================
+      # STUFENLICHT RAUF COLORIZED
+      #
+      # Uses the configured color for every step.
+      # ========================================================
+
       - addressable_lambda:
           name: "Stufenlicht rauf colorized"
           update_interval: 16ms
+
           lambda: |-
+
             static const int16_t anzahl = ${stufen_anzahl};
-            int ledStufe[anzahl] = ${leds_pro_stufe};
-            Color ledStufenFarbe[anzahl] = ${farbe_je_stufe};
+
+            const int ledStufe[anzahl] = ${leds_pro_stufe};
+
+            const esphome::Color ledStufenFarbe[anzahl] =
+              ${farbe_je_stufe};
+
+            static int16_t progress = 0;
+            static uint32_t last_time = 0;
+
+            if (initial_run) {
+              progress = 0;
+              last_time = millis();
+
+              it.all() = esphome::Color::BLACK;
+              return;
+            }
+
+            if (millis() - last_time < 200) {
+              return;
+            }
+
+            last_time = millis();
+
+            if (progress >= anzahl) {
+              return;
+            }
 
             int von = 0;
-            static uint16_t progress = 0;
-            if (initial_run) {
-              progress = -1;
-            }
-            
-            for(int stufe=0; stufe < anzahl; stufe++){
-              if(stufe == progress){
-                it.range(von, von + ledStufe[stufe]) = ledStufenFarbe[stufe];
-              } else {
-                von += ledStufe[stufe];
+
+            for (int stufe = 0; stufe < anzahl; stufe++) {
+
+              if (stufe == progress) {
+
+                it.range(
+                  von,
+                  von + ledStufe[stufe]
+                ) = ledStufenFarbe[stufe];
+
+                break;
               }
+
+              von += ledStufe[stufe];
             }
-            {
-            if(millis() - last_time >= 200)
-            } 
+
             progress++;
 
 
-      # Bei diesem Effekt wird jede Stufe einzeln ausgeschaltet. (Laufrichtung von Stripe-Start nach Stripe-Ende)
-      # 
-      # - anzahl             -  muss auf die Anzahl der Stufen angepasst werden
-      # - ledStufe[anzahl]   -  ist ein Array, welches für jede Stufe die jeweilige Anzahl der LEDs beinhaltet.
-      #                         Die Anzahl der in ledStufe enthaltenen Einträge muss der Anzahl der Stufen entsprechen!
+      # ========================================================
+      # STUFENLICHT RAUF AUS
+      #
+      # 0 -> 1 -> 2 -> ... -> 15 OFF
+      # ========================================================
+
       - addressable_lambda:
           name: "Stufenlicht rauf aus"
           update_interval: 16ms
+
           lambda: |-
+
             static const int16_t anzahl = ${stufen_anzahl};
-            int ledStufe[anzahl] = ${leds_pro_stufe};
-            int von = 0;
-            
-            static uint16_t progress = 0;
+
+            const int ledStufe[anzahl] = ${leds_pro_stufe};
+
+            static int16_t progress = 0;
+            static uint32_t last_time = 0;
+
             if (initial_run) {
-              progress = -1;
+              progress = 0;
+              last_time = millis();
+              return;
             }
-            
-            for(int stufe=0; stufe < anzahl; stufe++){
-              if(stufe == progress){
-                it.range(von, von + ledStufe[stufe]) = esphome::Color(0,0,0);
-              } else {
-                von += ledStufe[stufe];
+
+            if (millis() - last_time < 500) {
+              return;
+            }
+
+            last_time = millis();
+
+            if (progress >= anzahl) {
+              return;
+            }
+
+            int von = 0;
+
+            for (int stufe = 0; stufe < anzahl; stufe++) {
+
+              if (stufe == progress) {
+
+                it.range(
+                  von,
+                  von + ledStufe[stufe]
+                ) = esphome::Color(0, 0, 0);
+
+                break;
               }
+
+              von += ledStufe[stufe];
             }
-            {
-            if(millis() - last_time >= 500)
-            }
-            
+
             progress++;
 
 
-      # Bei diesem Effekt wird jede Stufe einzeln in einer Zufalls-Farbe eingeschaltet. (Laufrichtung von Stripe-Ende nach Stripe-Start)
-      # In diesem Effekt behalten die Stufen bis zum abschalten ihre Farbe. 
-      # 
-      # - anzahl             -  muss auf die Anzahl der Stufen angepasst werden
-      # - ledStufe[anzahl]   -  ist ein Array, welches für jede Stufe die jeweilige Anzahl der LEDs beinhaltet.
-      #                         Die Anzahl der in ledStufe enthaltenen Einträge muss der Anzahl der Stufen entsprechen!
+      # ========================================================
+      # STUFENLICHT RUNTER
+      #
+      # 15 -> 14 -> ... -> 0
+      # ========================================================
+
       - addressable_lambda:
           name: "Stufenlicht runter"
           update_interval: 16ms
+
           lambda: |-
+
             static const int16_t anzahl = ${stufen_anzahl};
-            int ledStufe[anzahl] = ${leds_pro_stufe};
-            int von = 0;
-            
-            static uint16_t progress = 0;
+
+            const int ledStufe[anzahl] = ${leds_pro_stufe};
+
+            static int16_t progress = 0;
+            static uint32_t last_time = 0;
+
             if (initial_run) {
-              progress = anzahl;
+              progress = anzahl - 1;
+              last_time = millis();
+
+              it.all() = esphome::Color::BLACK;
+              return;
             }
-            
-            for(int stufe=0; stufe < anzahl; stufe++){
-              if(stufe == progress){
-                it.range(von, von + ledStufe[stufe]) = esphome::Color::random_color();
-              } else {
-                von += ledStufe[stufe];
+
+            if (millis() - last_time < 300) {
+              return;
+            }
+
+            last_time = millis();
+
+            if (progress < 0) {
+              return;
+            }
+
+            int von = 0;
+
+            for (int stufe = 0; stufe < anzahl; stufe++) {
+
+              if (stufe == progress) {
+
+                it.range(
+                  von,
+                  von + ledStufe[stufe]
+                ) = esphome::Color::random_color();
+
+                break;
               }
+
+              von += ledStufe[stufe];
             }
-            {
-            if(millis() - last_time >= 300)
-            }
+
             progress--;
 
 
-      # Beim animierten Effekt wird jede Stufe einzeln in einer Zufalls-Farbe eingeschaltet.  (Laufrichtung von Stripe-Ende nach Stripe-Start)
-      # Sobald alle Stufen aktiv sind, wird bei der ersten Stufe wieder mit einer neuen Zufalls-Farbe angefangen.
-      # 
-      # - anzahl             -  muss auf die Anzahl der Stufen angepasst werden
-      # - ledStufe[anzahl]   -  ist ein Array, welches für jede Stufe die jeweilige Anzahl der LEDs beinhaltet.
-      #                         Die Anzahl der in ledStufe enthaltenen Einträge muss der Anzahl der Stufen entsprechen!
+      # ========================================================
+      # STUFENLICHT RUNTER ANIMIERT
+      #
+      # 15 -> 14 -> ... -> 0 -> 15 -> ...
+      # ========================================================
+
       - addressable_lambda:
           name: "Stufenlicht runter animiert"
           update_interval: 16ms
+
           lambda: |-
-            static const uint16_t anzahl = ${stufen_anzahl};
-            int ledStufe[anzahl] = ${leds_pro_stufe};
-            int von = 0;
-            
-            static uint16_t progress = 0;
+
+            static const int16_t anzahl = ${stufen_anzahl};
+
+            const int ledStufe[anzahl] = ${leds_pro_stufe};
+
+            static int16_t progress = 0;
+            static uint32_t last_time = 0;
+
             if (initial_run) {
-              progress = anzahl;
+              progress = anzahl - 1;
+              last_time = millis();
+
+              it.all() = esphome::Color::BLACK;
+              return;
             }
-            
-            for(int stufe=0; stufe < anzahl; stufe++){
-              if(stufe == progress){
-                it.range(von, von + ledStufe[stufe]) = esphome::Color::random_color();
-              } else {
-                von += ledStufe[stufe];
+
+            if (millis() - last_time < 300) {
+              return;
+            }
+
+            last_time = millis();
+
+            int von = 0;
+
+            for (int stufe = 0; stufe < anzahl; stufe++) {
+
+              if (stufe == progress) {
+
+                it.range(
+                  von,
+                  von + ledStufe[stufe]
+                ) = esphome::Color::random_color();
+
+                break;
               }
-            }
-            {
-            if(millis() - last_time >= 300)
-            }
 
-            if(progress <= 0){
-              progress = anzahl-1;
-            } else {
-              progress--;
+              von += ledStufe[stufe];
             }
 
+            progress--;
 
-      # Beim colorized Effekt wird jede Stufe einzeln in einer Festgelegten-Farbe eingeschaltet.  (Laufrichtung von Stripe-Ende nach Stripe-Start)
-      # Die Farbauswahl kann für jede Stufe individuell erfolgen
-      # 
-      # - anzahl                  -  muss auf die Anzahl der Stufen angepasst werden
-      # - ledStufe[anzahl]        -  ist ein Array, welches für jede Stufe die jeweilige Anzahl der LEDs beinhaltet.
-      #                              Die Anzahl der in ledStufe enthaltenen Einträge muss der Anzahl der Stufen entsprechen!
-      # - ledStufenFarbe[anzahl]  -  ist ein Array, welches für jede Stufe die jeweilige Farbe beinhaltet.
-      #                              Die Anzahl der in ledStufenFarbe enthaltenen Einträge muss der Anzahl der Stufen entsprechen!
-      #                              Die Farben sind in der Form "Color(rot, grün, blau)" anzugeben, 
-      #                              wobei hier für rot, grün und blau jeweils eine Zahl zwischen 0 und 255 angegeben werden muss.
+            if (progress < 0) {
+              progress = anzahl - 1;
+            }
+
+
+      # ========================================================
+      # STUFENLICHT RUNTER COLORIZED
+      #
+      # 15 -> 14 -> ... -> 0
+      # ========================================================
+
       - addressable_lambda:
           name: "Stufenlicht runter colorized"
           update_interval: 16ms
+
           lambda: |-
+
             static const int16_t anzahl = ${stufen_anzahl};
-            int ledStufe[anzahl] = ${leds_pro_stufe};
-            Color ledStufenFarbe[anzahl] = ${farbe_je_stufe};
+
+            const int ledStufe[anzahl] = ${leds_pro_stufe};
+
+            const esphome::Color ledStufenFarbe[anzahl] =
+              ${farbe_je_stufe};
+
+            static int16_t progress = 0;
+            static uint32_t last_time = 0;
+
+            if (initial_run) {
+              progress = anzahl - 1;
+              last_time = millis();
+
+              it.all() = esphome::Color::BLACK;
+              return;
+            }
+
+            if (millis() - last_time < 200) {
+              return;
+            }
+
+            last_time = millis();
+
+            if (progress < 0) {
+              return;
+            }
 
             int von = 0;
-            static uint16_t progress = 0;
-            if (initial_run) {
-              progress = anzahl;
-            }
-            
-            for(int stufe=0; stufe < anzahl; stufe++){
-              if(stufe == progress){
-                it.range(von, von + ledStufe[stufe]) = ledStufenFarbe[stufe];
-              } else {
-                von += ledStufe[stufe];
+
+            for (int stufe = 0; stufe < anzahl; stufe++) {
+
+              if (stufe == progress) {
+
+                it.range(
+                  von,
+                  von + ledStufe[stufe]
+                ) = ledStufenFarbe[stufe];
+
+                break;
               }
+
+              von += ledStufe[stufe];
             }
-            {
-            if(millis() - last_time >= 200)
+
             progress--;
 
 
-      # Bei diesem Effekt wird jede Stufe einzeln ausgeschaltet. (Laufrichtung von Stripe-Ende nach Stripe-Start)
-      # 
-      # - anzahl             -  muss auf die Anzahl der Stufen angepasst werden
-      # - ledStufe[anzahl]   -  ist ein Array, welches für jede Stufe die jeweilige Anzahl der LEDs beinhaltet.
-      #                         Die Anzahl der in ledStufe enthaltenen Einträge muss der Anzahl der Stufen entsprechen!
+      # ========================================================
+      # STUFENLICHT RUNTER AUS
+      #
+      # 15 -> 14 -> ... -> 0 OFF
+      # ========================================================
+
       - addressable_lambda:
           name: "Stufenlicht runter aus"
           update_interval: 16ms
+
           lambda: |-
-            static const uint16_t anzahl = ${stufen_anzahl};
-            int ledStufe[anzahl] = ${leds_pro_stufe};
-            int von = 0;
-            
-            static uint16_t progress = 0;
+
+            static const int16_t anzahl = ${stufen_anzahl};
+
+            const int ledStufe[anzahl] = ${leds_pro_stufe};
+
+            static int16_t progress = 0;
+            static uint32_t last_time = 0;
+
             if (initial_run) {
-              progress = anzahl;
+              progress = anzahl - 1;
+              last_time = millis();
+              return;
             }
-            
-            for(int stufe=0; stufe < anzahl; stufe++){
-              if(stufe == progress){
-                it.range(von, von + ledStufe[stufe]) = esphome::Color(0,0,0);
-              } else {
-                von += ledStufe[stufe];
+
+            if (millis() - last_time < 500) {
+              return;
+            }
+
+            last_time = millis();
+
+            if (progress < 0) {
+              return;
+            }
+
+            int von = 0;
+
+            for (int stufe = 0; stufe < anzahl; stufe++) {
+
+              if (stufe == progress) {
+
+                it.range(
+                  von,
+                  von + ledStufe[stufe]
+                ) = esphome::Color(0, 0, 0);
+
+                break;
               }
+
+              von += ledStufe[stufe];
             }
-            {
-            if(millis() - last_time >= 500)
-            } 
 
             progress--;
-
-
