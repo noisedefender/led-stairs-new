@@ -69,15 +69,20 @@ substitutions:
 
   sun_active: "false"
 
-  latitude: "51.138374°"
-  longitude: "7.185790°"
+latitude: "51.138374"
+longitude: "7.185790"
 
   # ============================================================
   # WIFI
   # ============================================================
 
-  wifi_ssid: !secret wifi_ssid
-  wifi_password: !secret wifi_password
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+  ap:
+    ssid: "SHYS RGB Treppe Fallback"
+    password: !secret fallback_password
 
 
 # ==============================================================
@@ -103,23 +108,6 @@ esp32:
   framework:
     type: arduino
 
-
-# ==============================================================
-# WIFI
-# ==============================================================
-
-wifi:
-  ssid: ${wifi_ssid}
-  password: ${wifi_password}
-
-  ap:
-    ssid: "SHYS RGB Treppe Fallback"
-    password: !secret fallback_password
-
-
-# ==============================================================
-# LOGGER
-# ==============================================================
 
 logger:
 
@@ -281,7 +269,7 @@ script:
   # ============================================================
 
   - id: treppe_rauf_aktivieren
-    mode: restart
+    mode: single
 
     then:
 
@@ -351,7 +339,7 @@ script:
   # ============================================================
 
   - id: treppe_runter_aktivieren
-    mode: restart
+    mode: single
 
     then:
 
