@@ -1,96 +1,4 @@
 substitutions:
-
-  # ============================================================
-  # HARDWARE
-  # ============================================================
-
-  lightlevel_pin: GPIO1
-  pir_down_pin: GPIO2
-  pir_up_pin: GPIO3
-  led_pin: GPIO4
-
-  # ============================================================
-  # STAIR TIMING
-  # ============================================================
-
-  # Максимальное время работы после срабатывания PIR,
-  # если движение на противоположном конце не обнаружено.
-  timeout_seconds: 60s
-
-  # Задержка перед началом выключения после PIR
-  # на противоположном конце.
-  switchoff_delay_seconds: 10s
-
-  # После полного выключения лестница некоторое время
-  # игнорирует PIR.
-  cooldown_seconds: 5s
-
-  # ============================================================
-  # EFFECTS USED BY PIR
-  # ============================================================
-
-  led_effect_up: "Step Light Up Colorized"
-  led_effect_down: "Step Light Down Colorized"
-
-  led_effect_up_off: "Step Light Up Off"
-  led_effect_down_off: "Step Light Down Off"
-
-  led_effect_off_timeout: 10s
-
-  # ============================================================
-  # STAIR CONFIGURATION
-  # ============================================================
-
-  step_count: "16"
-
-  # Количество LED на каждой ступени.
-  # Сумма должна совпадать с led_count.
-  leds_per_step: "{36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36}"
-
-  # Цвет каждой ступени.
-  # RGB 0..255.
-  step_colors: "{Color(39,111,181), Color(39,111,181), Color(39,111,181), Color(39,111,181), Color(39,111,181), Color(39,111,181), Color(39,111,181), Color(39,111,181), Color(39,111,181), Color(39,111,181), Color(39,111,181), Color(39,111,181), Color(39,111,181), Color(39,111,181), Color(39,111,181), Color(39,111,181)}"
-
-  # Общее количество LED.
-  led_count: "576"
-
-  # ============================================================
-  # LIGHT SENSOR
-  # ============================================================
-
-  light_sensor_active: "false"
-
-  # При значении ниже этого уровня лестница разрешена.
-  lightlevel_maxvalue: "0.7"
-
-  # ============================================================
-  # SUN
-  # ============================================================
-
-  sun_active: "false"
-
-latitude: "51.138374"
-longitude: "7.185790"
-
-  # ============================================================
-  # WIFI
-  # ============================================================
-
-wifi:
-  ssid: !secret wifi_ssid
-  password: !secret wifi_password
-
-  ap:
-    ssid: "SHYS RGB Staircase Fallback"
-    password: !secret fallback_password
-
-
-# ==============================================================
-# ESPHOME
-# ==============================================================
-
-esphome:
-substitutions:
   # Hardware pins
   lightlevel_pin: GPIO1
   pir_down_pin: GPIO2
@@ -107,10 +15,10 @@ substitutions:
   cooldown_seconds: 5s
 
   # Effects used by PIR
-  led_effect_up: "Stufenlicht rauf colorized"
-  led_effect_down: "Stufenlicht runter colorized"
-  led_effect_up_off: "Stufenlicht rauf aus"
-  led_effect_down_off: "Stufenlicht runter aus"
+  led_effect_up: "Stair Light Up Colorized"
+  led_effect_down: "Stair Light Down Colorized"
+  led_effect_up_off: "Stair Light Up Off"
+  led_effect_down_off: "Stair Light Down Off"
   led_effect_off_timeout: 10s
 
   # Light sensor
@@ -126,12 +34,12 @@ wifi:
   ssid: !secret wifi_ssid
   password: !secret wifi_password
   ap:
-    ssid: "SHYS RGB Treppe Fallback"
+    ssid: "SHYS RGB Stair Fallback"
     password: !secret fallback_password
 
 esphome:
-  name: shys-rgb-treppe
-  friendly_name: SHYS RGB Treppe
+  name: shys-rgb-stair
+  friendly_name: SHYS RGB Stair
   on_boot:
     priority: -100
     then:
@@ -159,30 +67,30 @@ time:
     id: sntp_time
 
 globals:
-  - id: treppe_rauf_laeuft
+  - id: stair_up_running
     type: bool
     restore_value: no
     initial_value: "false"
 
-  - id: treppe_runter_laeuft
+  - id: stair_down_running
     type: bool
     restore_value: no
     initial_value: "false"
 
   # Active stair count: 1..50
-  - id: stufen_anzahl_runtime
+  - id: stairs_count_runtime
     type: int
     restore_value: no
     initial_value: "16"
 
   # Number of LEDs on each stair. Maximum 50 entries.
-  - id: stufen_leds
+  - id: stairs_leds
     type: int[50]
     restore_value: no
     initial_value: '{36,36,36,36,36,36,36,36,36,36,36,36,36,36,36,36,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}'
 
   # Color per stair. Default: RGB 39,111,181.
-  - id: stufen_colors
+  - id: stairs_colors
     type: esphome::Color[50]
     restore_value: no
     initial_value: '{Color(39,111,181),Color(39,111,181),Color(39,111,181),Color(39,111,181),Color(39,111,181),Color(39,111,181),Color(39,111,181),Color(39,111,181),Color(39,111,181),Color(39,111,181),Color(39,111,181),Color(39,111,181),Color(39,111,181),Color(39,111,181),Color(39,111,181),Color(39,111,181),Color(39,111,181),Color(39,111,181),Color(39,111,181),Color(39,111,181),Color(39,111,181),Color(39,111,181),Color(39,111,181),Color(39,111,181),Color(39,111,181),Color(39,111,181),Color(39,111,181),Color(39,111,181),Color(39,111,181),Color(39,111,181),Color(39,111,181),Color(39,111,181),Color(39,111,181),Color(39,111,181),Color(39,111,181),Color(39,111,181),Color(39,111,181),Color(39,111,181),Color(39,111,181),Color(39,111,181),Color(39,111,181),Color(39,111,181),Color(39,111,181),Color(39,111,181),Color(39,111,181),Color(39,111,181),Color(39,111,181),Color(39,111,181),Color(39,111,181),Color(39,111,181),Color(39,111,181)}'
@@ -199,8 +107,8 @@ globals:
 
 text_sensor:
   - platform: template
-    name: "Treppen-Status"
-    id: treppen_status
+    name: "Stair Status"
+    id: stairs_status
     lambda: |-
       return {"idle"};
 
@@ -214,12 +122,12 @@ text_sensor:
 sensor:
   - platform: adc
     pin: ${lightlevel_pin}
-    name: "RGB-Treppe Helligkeitssensor"
-    id: rgbtreppe_helligkeitssensor
+    name: "RGB Stair Light Sensor"
+    id: rgbstair_lightsensor
     update_interval: 30s
 
   - platform: template
-    name: "Total aktive LEDs"
+    name: "Total Active LEDs"
     id: total_leds_sensor
     unit_of_measurement: "LED"
     accuracy_decimals: 0
@@ -233,29 +141,29 @@ binary_sensor:
       number: ${pir_down_pin}
       mode:
         input: true
-    name: "Treppe Bewegungsmelder unten"
+    name: "Stair Motion Sensor Bottom"
     device_class: motion
-    id: rgbtreppe_pir_u
+    id: rgbstair_pir_bottom
     on_press:
       then:
-        - script.execute: treppe_rauf_aktivieren
+        - script.execute: stair_up_activate
 
   - platform: gpio
     pin:
       number: ${pir_up_pin}
       mode:
         input: true
-    name: "Treppe Bewegungsmelder oben"
+    name: "Stair Motion Sensor Top"
     device_class: motion
-    id: rgbtreppe_pir_o
+    id: rgbstair_pir_top
     on_press:
       then:
-        - script.execute: treppe_runter_aktivieren
+        - script.execute: stair_down_activate
 
 switch:
   - platform: template
-    name: "Treppe Aktiviert"
-    id: treppe_aktiv
+    name: "Stair Enabled"
+    id: stairs_enabled
     optimistic: true
     restore_mode: RESTORE_DEFAULT_ON
 
@@ -263,8 +171,8 @@ switch:
 # HOME ASSISTANT CONFIGURATION
 # ==============================================================
 #
-# "Anzahl Treppen" = 1..50
-# "LED pro Treppe" = comma-separated list, for example:
+# "Number of Stairs" = 1..50
+# "LEDs per Stair" = comma-separated list, for example:
 # 20,25,30,25,20
 #
 # The number of comma-separated values MUST equal the stair count.
@@ -272,8 +180,8 @@ switch:
 # ==============================================================
 number:
   - platform: template
-    name: "Anzahl Treppen"
-    id: stufen_anzahl_input
+    name: "Number of Stairs"
+    id: stairs_count_input
     min_value: 1
     max_value: 50
     step: 1
@@ -285,8 +193,8 @@ number:
 
 text:
   - platform: template
-    name: "LED pro Treppe"
-    id: leds_pro_stufe_input
+    name: "LEDs per Stair"
+    id: leds_per_stair_input
     mode: text
     optimistic: true
     restore_value: true
@@ -304,7 +212,7 @@ script:
     mode: restart
     then:
       - lambda: |-
-          int requested = (int) id(stufen_anzahl_input).state;
+          int requested = (int) id(stairs_count_input).state;
           if (requested < 1) requested = 1;
           if (requested > 50) requested = 50;
 
@@ -312,7 +220,7 @@ script:
           int count = 0;
           int total = 0;
 
-          std::string s = id(leds_pro_stufe_input).state;
+          std::string s = id(leds_per_stair_input).state;
           size_t start = 0;
 
           while (start <= s.size() && count < 50) {
@@ -356,12 +264,12 @@ script:
           }
 
           if (count == requested && total > 0 && total <= ${physical_led_count}) {
-            id(stufen_anzahl_runtime) = requested;
+            id(stairs_count_runtime) = requested;
             id(total_leds_runtime) = total;
 
             for (int i = 0; i < 50; i++) {
-              id(stufen_leds)[i] = (i < requested) ? parsed[i] : 0;
-              id(stufen_colors)[i] = esphome::Color(39, 111, 181);
+              id(stairs_leds)[i] = (i < requested) ? parsed[i] : 0;
+              id(stairs_colors)[i] = esphome::Color(39, 111, 181);
             }
 
             id(stair_config_valid) = true;
@@ -387,15 +295,15 @@ script:
   # ============================================================
   # BOTTOM PIR -> LIGHT UP
   # ============================================================
-  - id: treppe_rauf_aktivieren
+  - id: stair_up_activate
     mode: single
     then:
       - if:
           condition:
-            - switch.is_on: treppe_aktiv
+            - switch.is_on: stairs_enabled
             - or:
                 - lambda: |-
-                    return id(rgbtreppe_helligkeitssensor).state < ${lightlevel_maxvalue};
+                    return id(rgbstair_lightsensor).state < ${lightlevel_maxvalue};
                 - lambda: |-
                     return ${light_sensor_active} == false;
             - or:
@@ -406,41 +314,41 @@ script:
                     return ${sun_active} == false;
             - lambda: |-
                 return id(stair_config_valid) &&
-                       !id(treppe_rauf_laeuft) &&
-                       !id(treppe_runter_laeuft);
+                       !id(stair_up_running) &&
+                       !id(stair_down_running);
           then:
             - text_sensor.template.publish:
-                id: treppen_status
-                state: "Treppe rauf"
+                id: stairs_status
+                state: "Stair Up"
             - lambda: |-
-                id(treppe_rauf_laeuft) = true;
+                id(stair_up_running) = true;
             - light.turn_on:
-                id: rgbtreppe_led
+                id: rgbstair_led
                 effect: ${led_effect_up}
 
       - if:
           condition:
             - lambda: |-
-                return id(treppe_rauf_laeuft);
+                return id(stair_up_running);
           then:
             - wait_until:
                 timeout: ${timeout_seconds}
                 condition:
-                  binary_sensor.is_on: rgbtreppe_pir_o
-            - script.execute: treppe_rauf_deaktivieren
+                  binary_sensor.is_on: rgbstair_pir_top
+            - script.execute: stair_up_deactivate
 
   # ============================================================
   # TOP PIR -> LIGHT DOWN
   # ============================================================
-  - id: treppe_runter_aktivieren
+  - id: stair_down_activate
     mode: single
     then:
       - if:
           condition:
-            - switch.is_on: treppe_aktiv
+            - switch.is_on: stairs_enabled
             - or:
                 - lambda: |-
-                    return id(rgbtreppe_helligkeitssensor).state < ${lightlevel_maxvalue};
+                    return id(rgbstair_lightsensor).state < ${lightlevel_maxvalue};
                 - lambda: |-
                     return ${light_sensor_active} == false;
             - or:
@@ -451,71 +359,71 @@ script:
                     return ${sun_active} == false;
             - lambda: |-
                 return id(stair_config_valid) &&
-                       !id(treppe_rauf_laeuft) &&
-                       !id(treppe_runter_laeuft);
+                       !id(stair_up_running) &&
+                       !id(stair_down_running);
           then:
             - text_sensor.template.publish:
-                id: treppen_status
-                state: "Treppe runter"
+                id: stairs_status
+                state: "Stair Down"
             - lambda: |-
-                id(treppe_runter_laeuft) = true;
+                id(stair_down_running) = true;
             - light.turn_on:
-                id: rgbtreppe_led
+                id: rgbstair_led
                 effect: ${led_effect_down}
 
       - if:
           condition:
             - lambda: |-
-                return id(treppe_runter_laeuft);
+                return id(stair_down_running);
           then:
             - wait_until:
                 timeout: ${timeout_seconds}
                 condition:
-                  binary_sensor.is_on: rgbtreppe_pir_u
-            - script.execute: treppe_runter_deaktivieren
+                  binary_sensor.is_on: rgbstair_pir_bottom
+            - script.execute: stair_down_deactivate
 
   # ============================================================
   # SWITCH OFF AFTER MOVEMENT FROM BOTTOM
   # ============================================================
-  - id: treppe_rauf_deaktivieren
+  - id: stair_up_deactivate
     mode: restart
     then:
       - delay: ${switchoff_delay_seconds}
       - light.turn_on:
-          id: rgbtreppe_led
+          id: rgbstair_led
           effect: ${led_effect_up_off}
       - delay: ${led_effect_off_timeout}
-      - light.turn_off: rgbtreppe_led
+      - light.turn_off: rgbstair_led
       - delay: ${cooldown_seconds}
       - lambda: |-
-          id(treppe_rauf_laeuft) = false;
+          id(stair_up_running) = false;
       - text_sensor.template.publish:
-          id: treppen_status
+          id: stairs_status
           state: "idle"
 
   # ============================================================
   # SWITCH OFF AFTER MOVEMENT FROM TOP
   # ============================================================
-  - id: treppe_runter_deaktivieren
+  - id: stair_down_deactivate
     mode: restart
     then:
       - delay: ${switchoff_delay_seconds}
       - light.turn_on:
-          id: rgbtreppe_led
+          id: rgbstair_led
           effect: ${led_effect_down_off}
       - delay: ${led_effect_off_timeout}
-      - light.turn_off: rgbtreppe_led
+      - light.turn_off: rgbstair_led
       - delay: ${cooldown_seconds}
       - lambda: |-
-          id(treppe_runter_laeuft) = false;
+          id(stair_down_running) = false;
       - text_sensor.template.publish:
-          id: treppen_status
+          id: stairs_status
           state: "idle"
 
 light:
   - platform: esp32_rmt_led_strip
-    id: rgbtreppe_led
-    name: "Treppe Oben LED"
+    id: rgbstair_led
+    name: "Stair Top LED"
     pin: ${led_pin}
     chipset: WS2812
     rgb_order: GRB
@@ -530,7 +438,7 @@ light:
 
     on_turn_off:
       - text_sensor.template.publish:
-          id: treppen_status
+          id: stairs_status
           state: "idle"
 
     effects:
@@ -633,15 +541,15 @@ light:
           fade_out_rate: 120
 
       # ========================================================
-      # STUFENLICHT RAUF
+      # STAIR LIGHT UP
       # ========================================================
       - addressable_lambda:
-          name: "Stufenlicht rauf"
+          name: "Stair Light Up"
           update_interval: 16ms
           lambda: |-
             static int progress = 0;
             static uint32_t last_time = 0;
-            const int anzahl = id(stufen_anzahl_runtime);
+            const int count = id(stairs_count_runtime);
 
             if (initial_run) {
               progress = 0;
@@ -652,31 +560,31 @@ light:
 
             if (millis() - last_time < 300) return;
             last_time = millis();
-            if (progress >= anzahl) return;
+            if (progress >= count) return;
 
-            int von = 0;
-            for (int stufe = 0; stufe < anzahl; stufe++) {
-              if (stufe == progress) {
-                int ende = von + id(stufen_leds)[stufe];
-                if (ende <= id(total_leds_runtime)) {
-                  it.range(von, ende) = esphome::Color::random_color();
+            int from = 0;
+            for (int stair = 0; stair < count; stair++) {
+              if (stair == progress) {
+                int end = from + id(stairs_leds)[stair];
+                if (end <= id(total_leds_runtime)) {
+                  it.range(from, end) = esphome::Color::random_color();
                 }
                 break;
               }
-              von += id(stufen_leds)[stufe];
+              from += id(stairs_leds)[stair];
             }
             progress++;
 
       # ========================================================
-      # STUFENLICHT RAUF ANIMIERT
+      # STAIR LIGHT UP ANIMATED
       # ========================================================
       - addressable_lambda:
-          name: "Stufenlicht rauf animiert"
+          name: "Stair Light Up Animated"
           update_interval: 16ms
           lambda: |-
             static int progress = 0;
             static uint32_t last_time = 0;
-            const int anzahl = id(stufen_anzahl_runtime);
+            const int count = id(stairs_count_runtime);
 
             if (initial_run) {
               progress = 0;
@@ -688,31 +596,31 @@ light:
             if (millis() - last_time < 300) return;
             last_time = millis();
 
-            int von = 0;
-            for (int stufe = 0; stufe < anzahl; stufe++) {
-              if (stufe == progress) {
-                int ende = von + id(stufen_leds)[stufe];
-                if (ende <= id(total_leds_runtime)) {
-                  it.range(von, ende) = esphome::Color::random_color();
+            int from = 0;
+            for (int stair = 0; stair < count; stair++) {
+              if (stair == progress) {
+                int end = from + id(stairs_leds)[stair];
+                if (end <= id(total_leds_runtime)) {
+                  it.range(from, end) = esphome::Color::random_color();
                 }
                 break;
               }
-              von += id(stufen_leds)[stufe];
+              from += id(stairs_leds)[stair];
             }
 
             progress++;
-            if (progress >= anzahl) progress = 0;
+            if (progress >= count) progress = 0;
 
       # ========================================================
-      # STUFENLICHT RAUF COLORIZED
+      # STAIR LIGHT UP COLORIZED
       # ========================================================
       - addressable_lambda:
-          name: "Stufenlicht rauf colorized"
+          name: "Stair Light Up Colorized"
           update_interval: 16ms
           lambda: |-
             static int progress = 0;
             static uint32_t last_time = 0;
-            const int anzahl = id(stufen_anzahl_runtime);
+            const int count = id(stairs_count_runtime);
 
             if (initial_run) {
               progress = 0;
@@ -723,31 +631,31 @@ light:
 
             if (millis() - last_time < 200) return;
             last_time = millis();
-            if (progress >= anzahl) return;
+            if (progress >= count) return;
 
-            int von = 0;
-            for (int stufe = 0; stufe < anzahl; stufe++) {
-              if (stufe == progress) {
-                int ende = von + id(stufen_leds)[stufe];
-                if (ende <= id(total_leds_runtime)) {
-                  it.range(von, ende) = id(stufen_colors)[stufe];
+            int from = 0;
+            for (int stair = 0; stair < count; stair++) {
+              if (stair == progress) {
+                int end = from + id(stairs_leds)[stair];
+                if (end <= id(total_leds_runtime)) {
+                  it.range(from, end) = id(stairs_colors)[stair];
                 }
                 break;
               }
-              von += id(stufen_leds)[stufe];
+              from += id(stairs_leds)[stair];
             }
             progress++;
 
       # ========================================================
-      # STUFENLICHT RAUF AUS
+      # STAIR LIGHT UP OFF
       # ========================================================
       - addressable_lambda:
-          name: "Stufenlicht rauf aus"
+          name: "Stair Light Up Off"
           update_interval: 16ms
           lambda: |-
             static int progress = 0;
             static uint32_t last_time = 0;
-            const int anzahl = id(stufen_anzahl_runtime);
+            const int count = id(stairs_count_runtime);
 
             if (initial_run) {
               progress = 0;
@@ -757,34 +665,34 @@ light:
 
             if (millis() - last_time < 500) return;
             last_time = millis();
-            if (progress >= anzahl) return;
+            if (progress >= count) return;
 
-            int von = 0;
-            for (int stufe = 0; stufe < anzahl; stufe++) {
-              if (stufe == progress) {
-                int ende = von + id(stufen_leds)[stufe];
-                if (ende <= id(total_leds_runtime)) {
-                  it.range(von, ende) = esphome::Color::BLACK;
+            int from = 0;
+            for (int stair = 0; stair < count; stair++) {
+              if (stair == progress) {
+                int end = from + id(stairs_leds)[stair];
+                if (end <= id(total_leds_runtime)) {
+                  it.range(from, end) = esphome::Color::BLACK;
                 }
                 break;
               }
-              von += id(stufen_leds)[stufe];
+              from += id(stairs_leds)[stair];
             }
             progress++;
 
       # ========================================================
-      # STUFENLICHT RUNTER
+      # STAIR LIGHT DOWN
       # ========================================================
       - addressable_lambda:
-          name: "Stufenlicht runter"
+          name: "Stair Light Down"
           update_interval: 16ms
           lambda: |-
             static int progress = 0;
             static uint32_t last_time = 0;
-            const int anzahl = id(stufen_anzahl_runtime);
+            const int count = id(stairs_count_runtime);
 
             if (initial_run) {
-              progress = anzahl - 1;
+              progress = count - 1;
               last_time = millis();
               it.all() = esphome::Color::BLACK;
               return;
@@ -794,32 +702,32 @@ light:
             last_time = millis();
             if (progress < 0) return;
 
-            int von = 0;
-            for (int stufe = 0; stufe < anzahl; stufe++) {
-              if (stufe == progress) {
-                int ende = von + id(stufen_leds)[stufe];
-                if (ende <= id(total_leds_runtime)) {
-                  it.range(von, ende) = esphome::Color::random_color();
+            int from = 0;
+            for (int stair = 0; stair < count; stair++) {
+              if (stair == progress) {
+                int end = from + id(stairs_leds)[stair];
+                if (end <= id(total_leds_runtime)) {
+                  it.range(from, end) = esphome::Color::random_color();
                 }
                 break;
               }
-              von += id(stufen_leds)[stufe];
+              from += id(stairs_leds)[stair];
             }
             progress--;
 
       # ========================================================
-      # STUFENLICHT RUNTER ANIMIERT
+      # STAIR LIGHT DOWN ANIMATED
       # ========================================================
       - addressable_lambda:
-          name: "Stufenlicht runter animiert"
+          name: "Stair Light Down Animated"
           update_interval: 16ms
           lambda: |-
             static int progress = 0;
             static uint32_t last_time = 0;
-            const int anzahl = id(stufen_anzahl_runtime);
+            const int count = id(stairs_count_runtime);
 
             if (initial_run) {
-              progress = anzahl - 1;
+              progress = count - 1;
               last_time = millis();
               it.all() = esphome::Color::BLACK;
               return;
@@ -828,34 +736,34 @@ light:
             if (millis() - last_time < 300) return;
             last_time = millis();
 
-            int von = 0;
-            for (int stufe = 0; stufe < anzahl; stufe++) {
-              if (stufe == progress) {
-                int ende = von + id(stufen_leds)[stufe];
-                if (ende <= id(total_leds_runtime)) {
-                  it.range(von, ende) = esphome::Color::random_color();
+            int from = 0;
+            for (int stair = 0; stair < count; stair++) {
+              if (stair == progress) {
+                int end = from + id(stairs_leds)[stair];
+                if (end <= id(total_leds_runtime)) {
+                  it.range(from, end) = esphome::Color::random_color();
                 }
                 break;
               }
-              von += id(stufen_leds)[stufe];
+              from += id(stairs_leds)[stair];
             }
 
             progress--;
-            if (progress < 0) progress = anzahl - 1;
+            if (progress < 0) progress = count - 1;
 
       # ========================================================
-      # STUFENLICHT RUNTER COLORIZED
+      # STAIR LIGHT DOWN COLORIZED
       # ========================================================
       - addressable_lambda:
-          name: "Stufenlicht runter colorized"
+          name: "Stair Light Down Colorized"
           update_interval: 16ms
           lambda: |-
             static int progress = 0;
             static uint32_t last_time = 0;
-            const int anzahl = id(stufen_anzahl_runtime);
+            const int count = id(stairs_count_runtime);
 
             if (initial_run) {
-              progress = anzahl - 1;
+              progress = count - 1;
               last_time = millis();
               it.all() = esphome::Color::BLACK;
               return;
@@ -865,32 +773,32 @@ light:
             last_time = millis();
             if (progress < 0) return;
 
-            int von = 0;
-            for (int stufe = 0; stufe < anzahl; stufe++) {
-              if (stufe == progress) {
-                int ende = von + id(stufen_leds)[stufe];
-                if (ende <= id(total_leds_runtime)) {
-                  it.range(von, ende) = id(stufen_colors)[stufe];
+            int from = 0;
+            for (int stair = 0; stair < count; stair++) {
+              if (stair == progress) {
+                int end = from + id(stairs_leds)[stair];
+                if (end <= id(total_leds_runtime)) {
+                  it.range(from, end) = id(stairs_colors)[stair];
                 }
                 break;
               }
-              von += id(stufen_leds)[stufe];
+              from += id(stairs_leds)[stair];
             }
             progress--;
 
       # ========================================================
-      # STUFENLICHT RUNTER AUS
+      # STAIR LIGHT DOWN OFF
       # ========================================================
       - addressable_lambda:
-          name: "Stufenlicht runter aus"
+          name: "Stair Light Down Off"
           update_interval: 16ms
           lambda: |-
             static int progress = 0;
             static uint32_t last_time = 0;
-            const int anzahl = id(stufen_anzahl_runtime);
+            const int count = id(stairs_count_runtime);
 
             if (initial_run) {
-              progress = anzahl - 1;
+              progress = count - 1;
               last_time = millis();
               return;
             }
@@ -899,15 +807,15 @@ light:
             last_time = millis();
             if (progress < 0) return;
 
-            int von = 0;
-            for (int stufe = 0; stufe < anzahl; stufe++) {
-              if (stufe == progress) {
-                int ende = von + id(stufen_leds)[stufe];
-                if (ende <= id(total_leds_runtime)) {
-                  it.range(von, ende) = esphome::Color::BLACK;
+            int from = 0;
+            for (int stair = 0; stair < count; stair++) {
+              if (stair == progress) {
+                int end = from + id(stairs_leds)[stair];
+                if (end <= id(total_leds_runtime)) {
+                  it.range(from, end) = esphome::Color::BLACK;
                 }
                 break;
               }
-              von += id(stufen_leds)[stufe];
+              from += id(stairs_leds)[stair];
             }
             progress--;
